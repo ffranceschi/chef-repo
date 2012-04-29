@@ -1,0 +1,22 @@
+backend server1 {
+  .host = "ec2-184-73-160-169.compute-1.amazonaws.com";
+  .port = "http";
+  .probe = {
+         .url = "/ikuna.txt";
+         .interval = 5s;
+         .timeout = 1 s;
+         .window = 5;
+         .threshold = 3;
+    }
+  }
+#backend server2 {
+#   .host = "server2.example.com";
+#   .probe = {
+#         .url = "/";
+#         .interval = 5s;
+#         .timeout = 1 s;
+#         .window = 5;
+#         .threshold = 3;
+#   }
+# }
+

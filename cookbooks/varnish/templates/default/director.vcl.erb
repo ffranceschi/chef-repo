@@ -1,0 +1,12 @@
+include "backend.vcl";
+
+director ikuna_director round-robin {
+      {
+              .backend = server1;
+      }
+#      # server2
+#      {
+#              .backend = server2;
+#      }
+
+}
