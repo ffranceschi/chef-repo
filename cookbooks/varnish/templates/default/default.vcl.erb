@@ -15,7 +15,34 @@ sub vcl_recv {
     } else {
        set req.grace = 15s;
     }
+
+#Force Varnish to cache documents even when cookies are present
+  if (req.request == "GET" && req.http.cookie) {
+     return(lookup);
+  }
+
+
+    if (req.url ~ "\.(css|jpg|gif|jpeg|png|html)") {
+        remove req.http.cookie;
+        return (lookup);
+    }
+
+    if (req.url ~ "^/admin/.*$" ||
+        req.url ~ "^.*/admin/.*$" ||
+        req.url ~ "^/admin/.*$" ||
+        req.url ~ "^.*/admin/.*$" ||
+        req.url ~ "^.*/customer/.*$" ||
+        req.url ~ "^.*/account/.*$" ||
+        req.url ~ "^.*/login/.*$" 
+       ) {
+        return (pass);
+    }
+
 	
+#  if ( !( req.url ~ "^/admin/") ) {
+#    unset req.http.Cookie;
+#  }
+
 #  if (req.http.host ~ "(?i)^(www.)?arizonadeportes.com") {
 #   set req.http.Host = regsub(req.http.Host, ":80$", "");
 #    set req.backend = default;
@@ -36,7 +63,8 @@ sub vcl_recv {
     call devicedetect;
 
     if (req.http.host ~ "^(www\.)?telemundoatlanta\.com$") {
-	    if (req.http.X-UA-Device ~ "^mobile" || req.http.X-UA-device ~ "^tablet") {
+#	    if (req.http.X-UA-Device ~ "^mobile" || req.http.X-UA-device ~ "^tablet") {
+           if (req.http.X-UA-Device ~ "^mobile" ) {
 		error 750 "Moved Temporarily";
 	    }
     }
@@ -44,6 +72,7 @@ sub vcl_recv {
 	
     if (req.url ~ "\.(css|jpg|gif|jpeg|png|html)") {
         remove req.http.cookie;
+	return (lookup);
     }
 
     if (req.restarts == 0) {
@@ -72,6 +101,11 @@ sub vcl_recv {
         /* Not cacheable by default */
         return (pass);
     }
+
+    if (client.ip == "80.28.213.70") {
+	return (pipe);
+    }
+
     return (lookup);
 }
 
@@ -109,30 +143,43 @@ sub vcl_miss {
 
 sub vcl_fetch {
 
-    set beresp.grace = 30m;   
+    set beresp.grace = 300s;   
+
+    if (beresp.http.Set-Cookie) {
+		 return(deliver);
+    }
 
     if (req.url ~ "\.css$") {
                 set beresp.ttl = 120s;
     }
+
+    if (req.url ~ "\.ajax$") {
+                set beresp.ttl = 20s;
+    }
+
 
     if (req.url ~ "\.js$") {
                 set beresp.ttl = 120s;
     }
 
     if (req.url ~ "\.html$") {
-                set beresp.ttl = 1d;
+                set beresp.ttl = 180s;
+    }
+
+    if (req.url ~ "\.xml$") {
+                set beresp.ttl = 180s;
     }
 
     if (req.url ~ "\.htm$") {
-                set beresp.ttl = 1d;
+                set beresp.ttl = 180s;
     }
 
-    if (beresp.ttl < 10s) {
-        /* If a ttl is set to 0 or less as per default TTL rules, so will obj.cacheable. You can overwrite
-         * this, and you should if you are chaning from not caching to caching.
-         */
-        set beresp.ttl = 600s;
-    }
+#    if (beresp.ttl < 10s) {
+#        /* If a ttl is set to 0 or less as per default TTL rules, so will obj.cacheable. You can overwrite
+#         * this, and you should if you are chaning from not caching to caching.
+#         */
+#        set beresp.ttl = 300s;
+#    }
 
     if (beresp.ttl <= 0s ||
         beresp.http.Set-Cookie ||
@@ -143,10 +190,25 @@ sub vcl_fetch {
                 set beresp.ttl = 120 s;
                 return (hit_for_pass);
     }
+
+    if (req.url ~ "\.php$") {
+                set beresp.ttl = 0s;
+    }
+
+    if (req.url ~ "\.(swf|flv|mp4)") {
+                set beresp.ttl = 0s;
+    }
+
     return (deliver);
 }
 
 sub vcl_deliver {
+    remove resp.http.X-Varnish;
+    remove resp.http.Via;
+    remove resp.http.Age;
+    remove resp.http.X-Powered-By;
+    remove resp.http.Server;
+
     return (deliver);
 }
 
@@ -154,7 +216,7 @@ sub vcl_error {
 
     #Redirect URL for Mobile Devices
     if (obj.status == 750) {
-        set obj.http.Location = "http://www.localwireless.com" + req.url;
+        set obj.http.Location = "http://www.atlalamano.com" + req.url;
         set obj.status = 302;
         #return(deliver);
     }
