@@ -1,3 +1,8 @@
+Initcron Chef Repository 
+
+- Sensu Cookbook with Dependencies : redis, rabbitmq, apt, yum, erlang, iptables
+
+
 This directory contains the cookbooks used to configure systems in your infrastructure with Chef.
 
 Knife needs to be configured to know where the cookbooks are located with the `cookbook_path` setting. If this is not set, then several cookbook operations will fail to work properly.
