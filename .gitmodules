@@ -1,3 +1,0 @@
-[submodule "cookbook/zookeeper"]
-	path = cookbook/zookeeper
-	url = git://github.com/initcron/zookeeper.git
