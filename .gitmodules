@@ -1,3 +1,6 @@
 [submodule "cookbooks/zookeeper"]
 	path = cookbooks/zookeeper
 	url = git://github.com/initcron/zookeeper.git
+[submodule "cookbooks/cloudera"]
+	path = cookbooks/cloudera
+	url = git@github.com:initcron/cloudera.git
