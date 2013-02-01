@@ -52,7 +52,7 @@ SECURITY_GROUPS=initcron
 ENVIRONMENT=
 TIMESTAMP=`date +%s`
 VERBOSE=
-LOGDIR=/var/log/clustertogo
+LOGDIR=~/log
 MAILTO=
 USER=ec2-user
 while getopts .hf:a:i:g:e:l:m:u:y:x:z:o:k:n:v. OPTION
@@ -149,12 +149,12 @@ fi
 # Each cluster should have its own uniq environment. 
 if [ `knife environment list | grep $ENVIRONMENT` ]
 then 
-    echo "ERROR: Environment Already Exist. Please enter a uniq value for Chef Environment." >> /var/log/clustertogo/gencluster.log
-    echo "Following is  the list of  existing environments. Choose a value not in this list." >> /var/log/clustertogo/gencluster.log
+    echo "ERROR: Environment Already Exist. Please enter a uniq value for Chef Environment." 
+    echo "Following is  the list of  existing environments. Choose a value not in this list." 
     knife environment list
     exit 1
 else
-    echo "I: Creating New Environment => $ENVIRONMENT" >> /var/log/clustertogo/gencluster.log
+    echo "I: Creating New Environment => $ENVIRONMENT" 
     if [ `knife --version | cut -d " " -f2` == "0.10.8" ]
     then
         knife environment create  $ENVIRONMENT -n
