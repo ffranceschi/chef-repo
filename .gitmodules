@@ -4,6 +4,3 @@
 [submodule "cookbooks/cloudera"]
 	path = cookbooks/cloudera
 	url = git@github.com:initcron/cloudera.git
-[submodule "cookbooks/hadoop"]
-	path = cookbooks/hadoop
-	url = git@github.com:initcron/chef-repo.git
