@@ -45,7 +45,7 @@ N=
 T=
 ERROR=0
 KEYPAIR=chef
-AMI=ami-53a8263a
+AMI=ami-233bb24a
 INSTANCE_TYPE=m1.small
 SSH_KEY=~/.ssh/id_rsa
 SECURITY_GROUPS=initcron
@@ -126,7 +126,7 @@ do
      esac
 done
 
-if [[ -z $T ]] || [[ -z $N ]] || [[ -z $MAILTO ]] || [[ -z $ENVIRONMENT ]]
+if [[ -z $N ]] || [[ -z $MAILTO ]] || [[ -z $ENVIRONMENT ]]
 #if [[ -z $T ]] || [[ -z $N ]] || [[ -z $ENVIRONMENT ]]
 then
      usage
